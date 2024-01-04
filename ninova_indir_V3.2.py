@@ -1,8 +1,6 @@
 ###
 kullanici_adi = None
 sifre = None
-# kullanici_adi = "ninova_kullanici_adiniz"
-# sifre = "ninova_sifreniz"
 ###
 
 import subprocess
