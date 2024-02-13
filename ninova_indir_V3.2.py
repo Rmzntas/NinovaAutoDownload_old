@@ -38,7 +38,7 @@ class Ninova:
         except:
             print("\nNinova'ya baglanilamadi, lutfen internet baglantinizi kontrol ediniz")
             exit()
-        bs_content = bs(r.content, "html.parser")
+        bs_content = bs(r.content.decode("utf-8"), "html.parser")
         viewstate = bs_content.find("input", {"name":"__VIEWSTATE"})["value"]
         viewstategenerator = bs_content.find("input", {"name":"__VIEWSTATEGENERATOR"})["value"]
         eventvalidation = bs_content.find("input", {"name":"__EVENTVALIDATION"})["value"]
@@ -60,7 +60,7 @@ class Ninova:
     def get_classes(self):
         self.classes = [] 
         r = self.req.get(self.kampus_url)
-        soup = bs(r.content, 'html.parser')
+        soup = bs(r.content.decode("utf-8"), 'html.parser')
         ul_element = soup.find('div', class_='menuErisimAgaci').find("ul")
         li_elements = ul_element.find_all('li', recursive=False)
         for li in li_elements:
@@ -105,7 +105,7 @@ class Ninova:
         c = 0
         files = []
         r = self.req.get(url)
-        soup = bs(r.content, 'html.parser')
+        soup = bs(r.content.decode("utf-8"), 'html.parser')
         div_element = soup.find('div', class_='dosyaSistemi')
         tr_elements = div_element.find_all('tr')
         for tr in tr_elements[2:]:
