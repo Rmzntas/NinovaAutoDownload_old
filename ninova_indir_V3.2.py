@@ -174,8 +174,12 @@ class Ninova:
                     print("Dosya türü boş olarak seçildi")
                     print()
         elif location:
+            url = location
             for i in range(10):
-                r = self.req.head(url, allow_redirects=True)
+                try:
+                    r = self.req.head(url, allow_redirects=True)
+                except:
+                    break
                 if r.history:
                     url = r.url
                 else:
