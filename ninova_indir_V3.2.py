@@ -196,6 +196,17 @@ class Ninova:
             if file == file_name or base == file_name:
                 return True
         return False
+    
+    def save_user_data(self):
+        file_name = os.path.basename(__file__)
+
+        with open(file_name, "r") as file:
+            code = file.read()
+        code = code.replace("kullanici_adi = None", f"kullanici_adi = '{kullanici_adi}'",1)
+        code = code.replace("sifre = None", f"sifre = '{sifre}'",1)
+        
+        with open(file_name, "w") as file:
+            file.write(code)
 
     def main(self):
         self.get_classes()
@@ -211,5 +222,12 @@ if __name__ == "__main__":
     if kullanici_adi is None or sifre is None:
         kullanici_adi = input("Kullanici adinizi girin: ")
         sifre = input("Sifrenizi girin: ")
+        save_input = input("Kullanici adi ve sifre kaydedilsin mi? (Y/N): ").upper()
+
     ninova = Ninova(kullanici_adi, sifre)
+    try:
+        if save_input == "Y":
+            ninova.save_user_data()
+    except:
+        pass
     ninova.main()
