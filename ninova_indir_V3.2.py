@@ -29,7 +29,7 @@ class Ninova:
         self.kadi = kadi
         self.sifre = sifre
         self.indirme_sayisi = 0
-        self.file_types = [".jpg",".jpeg",".pdf",".docx",".mp4",".mp3",".avi",".exe",".txt",".doc",".xls",".xlsx",".rar",".zip",".csv",".html",".ppt",".pptx"]
+        self.file_types = [".jpg",".jpeg",".pdf",".docx",".mp4",".mp3",".avi",".exe",".txt",".doc",".xls",".xlsx",".rar",".zip",".csv",".html",".ppt",".pptx",".sh"]
         self.forbidden_chars = r'[<>:"/\\|?*]'
         self.kampus_url = "https://ninova.itu.edu.tr/Kampus1"
         self.req = requests.Session()
