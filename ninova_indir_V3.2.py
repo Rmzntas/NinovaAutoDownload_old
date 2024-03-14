@@ -99,7 +99,89 @@ class Ninova:
             else:
                 # print("Sinif dosyalari bos, klasor olusturulmadi")
                 pass
+
+            hw_files = self.get_hw_files("https://ninova.itu.edu.tr/"+c[1]+"/Odevler")
+            if len(hw_files)>0:
+                isExist = os.path.exists(current_path+"/Odevler")
+                if not isExist:
+                    os.makedirs(current_path+"/Odevler")
+                    print("Klasor olusturuldu:","Odevler")
+                ninova.makedir_hw_download(hw_files, current_path+"/Odevler")
+            else:
+                # print("Odev dosyalari bos, klasor olusturulmadi")
+                pass
             print()
+        
+    def get_hw_files(self, url):
+        r = self.req.get(url)
+        folders = []
+        #id="ctl00_ContentPlaceHolder1_gvOdevListesi"
+        soup = bs(r.content.decode("utf-8"), 'html.parser')
+        table_element = soup.find('table', id='ctl00_ContentPlaceHolder1_gvOdevListesi')
+        tr_elements = table_element.find_all('tr')
+        for tr in tr_elements:
+            td_elements = tr.find_all('td')
+            for td in td_elements:
+                h2_elements = td.find_all('h2')
+                for h2 in h2_elements:
+                    a_elements = h2.find_all('a')
+                    for a in a_elements:
+                        href = a.get("href")
+                        href = "https://ninova.itu.edu.tr/"+href
+                        folder_name = a.get_text()
+                        folder_name = re.sub(self.forbidden_chars, '_', folder_name)
+                        folders.append([href, folder_name])
+
+        #id="ctl00_ContentPlaceHolder1_gvDosyalar"
+        files = []
+        for folder in folders:
+            r = self.req.get(folder[0])
+            soup = bs(r.content.decode("utf-8"), 'html.parser')
+            table_element = soup.find('table', id='ctl00_ContentPlaceHolder1_gvDosyalar')
+            tr_elements = table_element.find_all('tr')
+            for tr in tr_elements[1:]:
+                td_elements = tr.find_all('td')
+                for td in td_elements:
+                    a_elements = td.find_all('a')
+                    for a in a_elements:
+                        href = a.get("href")
+                        href = "https://ninova.itu.edu.tr"+href
+                        text = a.get_text()
+                        text = re.sub(self.forbidden_chars, '_', text)
+                        files.append([href,folder[1], text])
+        return files
+    
+    def makedir_hw_download(self, files, current_path):
+        for file in files:
+
+            folder_path = current_path+"/"+file[1]
+            if not self.file_name_exists(file[1],current_path):
+                os.makedirs(folder_path)
+                print("Klasor olusturuldu:",file[1])
+
+            if not self.file_name_exists(file[2],folder_path):
+                file_type, url = self.get_file_type(file[0])
+                
+                if file_type == ".url":
+                    self.indirme_sayisi += 1
+                    print("Dosya indiriliyor:",file[2])
+                    url = url
+                    with open(folder_path+"/"+file[2], "w") as file:
+                        file.write("[InternetShortcut]\n")
+                        file.write(f"URL={url}\n")
+                else:
+                    if file_type == file[1][-len(file_type):]:
+                        self.indirme_sayisi += 1
+                        r = self.req.get(url)
+                        print("Dosya indiriliyor:",file[2])
+                        with open(folder_path+"/"+file[2], "wb") as file:
+                            file.write(r.content)
+                    else:
+                        self.indirme_sayisi += 1
+                        r = self.req.get(url)
+                        print("Dosya indiriliyor:",file[2])
+                        with open(folder_path+"/"+file[2], "wb") as file:
+                            file.write(r.content)
 
     def get_files(self, url):
         c = 0
@@ -146,7 +228,6 @@ class Ninova:
                             file.write(r.content)
                     else:
                         self.indirme_sayisi += 1
-                        print(file[1])
                         r = self.req.get(url)
                         print("Dosya indiriliyor:",file[1]+file_type)
                         with open(current_path+"/"+file[1]+file_type, "wb") as file:
